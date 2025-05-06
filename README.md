@@ -34,7 +34,7 @@ This project provides two intuitive interfaces to **detect and decode QR codes a
    ```bash
    git clone https://github.com/Lamouchi-Bayrem/Data-Matrix-scanner.git
    cd Data-Matrix-scanner
-````
+
 
 2. **Install dependencies**:
 
@@ -133,9 +133,4 @@ desktop-app/
 
 This project is licensed under the **MIT License** – see the [LICENSE](LICENSE) file for details.
 
-```
 
----
-
-Would you like a visually styled version (like a PDF or web-rendered README) as well?
-```
