@@ -8,6 +8,10 @@ This project provides two intuitive interfaces to **detect and decode QR codes a
 
 ---
 
+##DEMO
+![App Demo](https://github.com/Lamouchi-Bayrem/Data-Matrix-scanner/blob/main/imgs/Capture%20d'%C3%A9cran%202025-05-07%20003024.png))
+![App Demo](https://github.com/Lamouchi-Bayrem/Data-Matrix-scanner/blob/main/imgs/Capture%20d'%C3%A9cran%202025-05-07%20003212.png))
+
 ## 🚀 Features
 
 - 🔍 Detects **QR codes** and **Data Matrix codes** in images
