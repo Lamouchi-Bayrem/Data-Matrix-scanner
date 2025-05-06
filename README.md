@@ -8,8 +8,13 @@ This project provides two intuitive interfaces to **detect and decode QR codes a
 
 ---
 
-##DEMO
-![App Demo](https://github.com/Lamouchi-Bayrem/Data-Matrix-scanner/blob/main/imgs/Capture%20d'%C3%A9cran%202025-05-07%20003024.png))
+-----
+## 🚀 Demo for the tkinter gui app
+![App Demo](https://github.com/Lamouchi-Bayrem/Data-Matrix-scanner/blob/main/imgs/Capture%20d'%C3%A9cran%202025-05-07%20003024.png)
+
+
+---------------
+## 🚀 Demo for the web app
 ![App Demo](https://github.com/Lamouchi-Bayrem/Data-Matrix-scanner/blob/main/imgs/Capture%20d'%C3%A9cran%202025-05-07%20003212.png))
 
 ## 🚀 Features
