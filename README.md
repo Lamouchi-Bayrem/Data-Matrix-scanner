@@ -1,8 +1,4 @@
-Here's an **enhanced and professionally formatted version** of your documentation for the **QR & Data Matrix Decoder Application**:
 
----
-
-````markdown
 # 📷 QR & Data Matrix Decoder Application
 
 This project provides two intuitive interfaces to **detect and decode QR codes and Data Matrix codes**:
