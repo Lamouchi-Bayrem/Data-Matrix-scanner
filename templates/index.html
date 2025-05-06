@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR & Data Matrix Decoder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --accent-color: #4895ef;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --success-color: #4cc9f0;
+            --error-color: #f72585;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f7fa;
+            color: var(--dark-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: #6c757d;
+            font-size: 1.1rem;
+        }
+
+        .upload-section {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .upload-area {
+            border: 2px dashed #ced4da;
+            border-radius: 8px;
+            padding: 3rem 2rem;
+            margin-bottom: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary-color);
+            background-color: rgba(67, 97, 238, 0.05);
+        }
+
+        .upload-area.active {
+            border-color: var(--success-color);
+            background-color: rgba(76, 201, 240, 0.05);
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .upload-text {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-hint {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 0.8rem 1.5rem;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .results-section {
+            display: none;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .results-title {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .result-item {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .result-type {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-bottom: 0.8rem;
+        }
+
+        .qr-type {
+            background-color: rgba(67, 97, 238, 0.1);
+            color: var(--primary-color);
+        }
+
+        .datamatrix-type {
+            background-color: rgba(240, 101, 67, 0.1);
+            color: #f06543;
+        }
+
+        .result-data {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            word-break: break-all;
+        }
+
+        .image-preview {
+            margin-top: 2rem;
+            text-align: center;
+        }
+
+        .preview-image {
+            max-width: 100%;
+            max-height: 400px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(67, 97, 238, 0.2);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s ease-in-out infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            color: var(--error-color);
+            text-align: center;
+            margin-top: 1rem;
+            font-weight: 500;
+        }
+
+        .copy-btn {
+            background-color: #e9ecef;
+            color: #495057;
+            border: none;
+            border-radius: 5px;
+            padding: 0.3rem 0.8rem;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-left: 0.5rem;
+        }
+
+        .copy-btn:hover {
+            background-color: #dee2e6;
+        }
+
+        .copy-btn:active {
+            transform: scale(0.95);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .upload-area {
+                padding: 2rem 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>QR & Data Matrix Decoder</h1>
+            <p class="subtitle">Upload an image to decode QR codes and Data Matrix codes</p>
+        </header>
+
+        <section class="upload-section">
+            <div id="uploadArea" class="upload-area">
+                <div class="upload-icon">📁</div>
+                <h3 class="upload-text">Drag & Drop your image here</h3>
+                <p class="upload-hint">or click to browse files (PNG, JPG, JPEG, BMP)</p>
+            </div>
+            <input type="file" id="fileInput" class="file-input" accept="image/*">
+            <button id="uploadBtn" class="btn">Select Image</button>
+            <div id="errorMessage" class="error-message"></div>
+        </section>
+
+        <div class="loading" id="loadingIndicator">
+            <div class="spinner"></div>
+            <p>Processing your image...</p>
+        </div>
+
+        <section class="results-section" id="resultsSection">
+            <h2 class="results-title">
+                <span>Decoding Results</span>
+                <button id="newScanBtn" class="btn btn-outline">New Scan</button>
+            </h2>
+            <div id="resultsContainer"></div>
+            <div class="image-preview">
+                <img id="processedImage" class="preview-image" src="" alt="Processed Image">
+            </div>
+        </section>
+
+        <footer>
+            <p>QR & Data Matrix Decoder Web App | © 2023</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const uploadArea = document.getElementById('uploadArea');
+            const fileInput = document.getElementById('fileInput');
+            const uploadBtn = document.getElementById('uploadBtn');
+            const resultsSection = document.getElementById('resultsSection');
+            const resultsContainer = document.getElementById('resultsContainer');
+            const processedImage = document.getElementById('processedImage');
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            const errorMessage = document.getElementById('errorMessage');
+            const newScanBtn = document.getElementById('newScanBtn');
+
+            // Handle file selection via button
+            uploadBtn.addEventListener('click', () => fileInput.click());
+
+            // Handle file selection via drag and drop
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('active');
+            });
+
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('active');
+            });
+
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('active');
+                
+                if (e.dataTransfer.files.length) {
+                    fileInput.files = e.dataTransfer.files;
+                    handleFileUpload();
+                }
+            });
+
+            uploadArea.addEventListener('click', () => fileInput.click());
+
+            // Handle file input change
+            fileInput.addEventListener('change', handleFileUpload);
+
+            // New scan button
+            newScanBtn.addEventListener('click', () => {
+                resultsSection.style.display = 'none';
+                fileInput.value = '';
+                errorMessage.textContent = '';
+            });
+
+            function handleFileUpload() {
+                const file = fileInput.files[0];
+                if (!file) return;
+
+                // Validate file type
+                const validTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/bmp', 'image/gif'];
+                if (!validTypes.includes(file.type)) {
+                    errorMessage.textContent = 'Please upload a valid image file (PNG, JPG, JPEG, BMP, GIF)';
+                    return;
+                }
+
+                // Reset UI
+                errorMessage.textContent = '';
+                resultsSection.style.display = 'none';
+                loadingIndicator.style.display = 'block';
+
+                // Prepare form data
+                const formData = new FormData();
+                formData.append('file', file);
+
+                // Send to server
+                fetch('/decode', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(err => { throw err; });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    loadingIndicator.style.display = 'none';
+                    
+                    if (data.error) {
+                        errorMessage.textContent = data.error;
+                        return;
+                    }
+
+                    // Display results
+                    displayResults(data.results, data.processed_image);
+                })
+                .catch(error => {
+                    loadingIndicator.style.display = 'none';
+                    errorMessage.textContent = error.error || 'An error occurred while processing the image';
+                    console.error('Error:', error);
+                });
+            }
+
+            function displayResults(results, processedImagePath) {
+                resultsContainer.innerHTML = '';
+                
+                if (results.length === 0) {
+                    resultsContainer.innerHTML = '<p>No QR codes or Data Matrix codes found in the image.</p>';
+                } else {
+                    results.forEach(result => {
+                        const resultItem = document.createElement('div');
+                        resultItem.className = 'result-item';
+                        
+                        const typeBadge = document.createElement('span');
+                        typeBadge.className = `result-type ${result.type.toLowerCase().replace('_', '-')}-type`;
+                        typeBadge.textContent = result.type.replace('_', ' ');
+                        
+                        const dataElement = document.createElement('div');
+                        dataElement.className = 'result-data';
+                        
+                        const dataText = document.createElement('span');
+                        dataText.textContent = result.data;
+                        
+                        const copyBtn = document.createElement('button');
+                        copyBtn.className = 'copy-btn';
+                        copyBtn.textContent = 'Copy';
+                        copyBtn.addEventListener('click', () => {
+                            navigator.clipboard.writeText(result.data).then(() => {
+                                copyBtn.textContent = 'Copied!';
+                                setTimeout(() => {
+                                    copyBtn.textContent = 'Copy';
+                                }, 2000);
+                            });
+                        });
+                        
+                        dataElement.appendChild(dataText);
+                        dataElement.appendChild(copyBtn);
+                        
+                        resultItem.appendChild(typeBadge);
+                        resultItem.appendChild(dataElement);
+                        
+                        resultsContainer.appendChild(resultItem);
+                    });
+                }
+                
+                // Display processed image
+                processedImage.src = `/uploads/${processedImagePath}`;
+                processedImage.onload = () => {
+                    resultsSection.style.display = 'block';
+                };
+            }
+        });
+    </script>
+</body>
+</html>
